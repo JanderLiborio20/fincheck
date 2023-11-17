@@ -34,9 +34,17 @@ export class TransactionsService {
     });
   }
 
-  findAllByUserId(userId: string) {
+  findAllByUserId(userId: string, filters: { month: number; year: number }) {
+    console.log('filters: ', filters);
+
     return this.transactionsRepo.findMany({
-      where: { userId },
+      where: {
+        userId,
+        date: {
+          gte: new Date(Date.UTC(filters.year, filters.month)),
+          lte: new Date(Date.UTC(filters.year, filters.month + 1)),
+        },
+      },
     });
   }
 
@@ -45,15 +53,30 @@ export class TransactionsService {
     transactionId: string,
     updateTransactionDto: UpdateTransactionDto,
   ) {
-    console.log(transactionId);
+    const { bankAccountId, categoryId, date, name, type, value } =
+      updateTransactionDto;
 
-    const { bankAccountId, categoryId } = updateTransactionDto;
+    this.validateEntitiesOwnership({
+      userId,
+      bankAccountId,
+      categoryId,
+      transactionId,
+    });
 
-    this.validateEntitiesOwnership({ userId, bankAccountId, categoryId });
+    return this.transactionsRepo.update({
+      where: { id: transactionId },
+      data: { bankAccountId, categoryId, date, name, type, value },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} transaction`;
+  async remove(userId: string, transactionId: string) {
+    await this.validateEntitiesOwnership({ userId, transactionId });
+
+    await this.transactionsRepo.delete({
+      where: { id: transactionId },
+    });
+
+    return null;
   }
 
   private async validateEntitiesOwnership({
@@ -63,8 +86,8 @@ export class TransactionsService {
     transactionId,
   }: {
     userId: string;
-    bankAccountId: string;
-    categoryId: string;
+    bankAccountId?: string;
+    categoryId?: string;
     transactionId?: string;
   }) {
     await Promise.all([
@@ -73,8 +96,13 @@ export class TransactionsService {
           userId,
           transactionId,
         ),
-      this.validateBankAccountOwnershipService.validate(userId, bankAccountId),
-      this.validateCategoryOwnershipService.validate(userId, categoryId),
+      bankAccountId &&
+        this.validateBankAccountOwnershipService.validate(
+          userId,
+          bankAccountId,
+        ),
+      categoryId &&
+        this.validateCategoryOwnershipService.validate(userId, categoryId),
     ]);
   }
 }
