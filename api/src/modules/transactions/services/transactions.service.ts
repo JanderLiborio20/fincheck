@@ -4,6 +4,7 @@ import { ValidateBankAccountOwnershipService } from '../../bank-accounts/service
 import { ValidateCategoryOwnershipService } from '../../categories/service/validate-category-ownership.service';
 import { CreateTransactionDto } from '../dto/create-transaction.dto';
 import { UpdateTransactionDto } from '../dto/update-transaction.dto';
+import { TransactionType } from '../entities/Transaction';
 import { ValidateTransactionOwnershipService } from './validate-transaction-ownership.service';
 
 @Injectable()
@@ -34,15 +35,32 @@ export class TransactionsService {
     });
   }
 
-  findAllByUserId(userId: string, filters: { month: number; year: number }) {
-    console.log('filters: ', filters);
+  async findAllByUserId(
+    userId: string,
+    filters: {
+      month: number;
+      year: number;
+      bankAccountId?: string;
+      type?: TransactionType;
+    },
+  ) {
+    const { month, year, bankAccountId, type } = filters;
+
+    if (bankAccountId) {
+      await this.validateEntitiesOwnership({
+        userId,
+        bankAccountId: bankAccountId,
+      });
+    }
 
     return this.transactionsRepo.findMany({
       where: {
         userId,
+        bankAccountId,
+        type,
         date: {
-          gte: new Date(Date.UTC(filters.year, filters.month)),
-          lte: new Date(Date.UTC(filters.year, filters.month + 1)),
+          gte: new Date(Date.UTC(year, month)),
+          lte: new Date(Date.UTC(year, month + 1)),
         },
       },
     });
