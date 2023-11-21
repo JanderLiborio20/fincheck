@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  box-shadow: 0 0 0 30px none inset !important; /* Adapte conforme necessário */
+  transition: background-color 5000s ease-in-out 0s; /* Adapte conforme necessário */
+}
+
+/* Se desejar alterar a cor do texto dentro do input ao ser preenchido automaticamente */
+
+/* Adapte conforme necessário */
+/* input:-webkit-autofill::first-line {
+  color: red;
+} */
