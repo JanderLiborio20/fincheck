@@ -3,6 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 import { z } from 'zod';
+import { useAuth } from '../../../app/hooks/useAuth';
 import { authService } from '../../../app/services/authService';
 import { SigninParams } from '../../../app/services/authService/signin';
 
@@ -31,10 +32,13 @@ export function useLoginController() {
     },
   });
 
+  const { signin } = useAuth();
+
   const handleSubmit = hookFormSubmiit(async (data) => {
     try {
       const { accessToken } = await mutateAsync(data);
-      console.log('accessToken: ', accessToken);
+
+      signin(accessToken);
     } catch (error) {
       toast.error('Credenciais inválidas!');
       console.log(error);
