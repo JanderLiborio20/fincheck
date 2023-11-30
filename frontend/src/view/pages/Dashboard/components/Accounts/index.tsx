@@ -2,13 +2,21 @@ import 'swiper/css';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 import { EyeIcon } from '../../../../../assets/components/EyeIcon';
-import { AccountCard } from './AccountCard';
-import { AccountsSliderNavigation } from './AccountsSliderNavigation';
+
+import { cn } from '../../../../../app/utils/cn';
+import { formatCurrency } from '../../../../../app/utils/formatCurrency';
+import { AccountCard } from './Card';
+import { AccountsSliderNavigation } from './SliderNavigation';
 import { useAccountsController } from './useAccountController';
 
 export function Accounts() {
-  const { setSliderState, sliderState, sliderPiperView } =
-    useAccountsController();
+  const {
+    setSliderState,
+    sliderState,
+    sliderPiperView,
+    areValuesVisible,
+    toggleValuesVisibility,
+  } = useAccountsController();
 
   return (
     <div
@@ -19,11 +27,19 @@ export function Accounts() {
         <span className="tracking-[-0.5px] text-white block">Saldo Total</span>
 
         <div className="flex items-center gap-2">
-          <strong className="tracking-[-1px] text-white text-2xl">
-            R$ 1000,00
+          <strong
+            className={cn(
+              `tracking-[-1px] text-white text-2xl`,
+              !areValuesVisible && 'blur-md',
+            )}
+          >
+            {formatCurrency(10000)}
           </strong>
-          <button className="w-8 h-8 flex items-center justify-center">
-            <EyeIcon open />
+          <button
+            className="w-8 h-8 flex items-center justify-center"
+            onClick={toggleValuesVisibility}
+          >
+            <EyeIcon open={!areValuesVisible} />
           </button>
         </div>
       </div>
