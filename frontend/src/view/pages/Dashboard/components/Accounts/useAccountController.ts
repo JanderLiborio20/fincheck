@@ -18,9 +18,10 @@ export function useAccountsController() {
   return {
     sliderState,
     setSliderState,
-    windowWidth,
     sliderPiperView,
     areValuesVisible,
     toggleValuesVisibility,
+    isLoading: false,
+    accounts: [],
   };
 }
