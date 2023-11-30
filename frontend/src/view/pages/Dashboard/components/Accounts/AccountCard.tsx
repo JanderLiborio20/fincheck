@@ -1,5 +1,5 @@
-import { formatCurrency } from '../../../../app/utils/formatCurrency';
-import { BankAccountTypeIcon } from '../../../../assets/components/BankAccountTypeIcon';
+import { formatCurrency } from '../../../../../app/utils/formatCurrency';
+import { BankAccountTypeIcon } from '../../../../../assets/components/BankAccountTypeIcon';
 
 interface AccountCardProps {
   color: string;
@@ -11,7 +11,7 @@ interface AccountCardProps {
 export function AccountCard({ balance, color, name, type }: AccountCardProps) {
   return (
     <div
-      className="p-4 bg-white rounded-2xl h-[200px] flex flex-col justify-between border-b-4 border-teal-950"
+      className="p-4 bg-white rounded-2xl h-[200px] flex flex-col justify-between border-b-4 border-teal-950 cursor-pointer"
       style={{ borderColor: color }}
     >
       <div>
