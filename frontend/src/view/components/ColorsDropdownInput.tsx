@@ -52,14 +52,14 @@ export function ColorsDropdownInput({
           >
             Cor
             <div className=" absolute right-3 top-1/2 -translate-y-1/2">
-              {!selectedColor && <ChevronDownIcon />}
+              {!selectedColor && (
+                <ChevronDownIcon className="w-6 h-6 text-gray-800" />
+              )}
               {selectedColor && (
                 <ColorIcon color={selectedColor.color} bg={selectedColor.bg} />
               )}
             </div>
           </button>
-          className="w-6 h-6 text-gray-800 absolute right-3 top-1/2
-          -translate-y-1/2"
         </DropdownMenu.Trigger>
 
         <DropdownMenu.Content className="grid grid-cols-4">
