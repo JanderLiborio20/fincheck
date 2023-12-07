@@ -1,17 +1,21 @@
+import { TrashIcon } from '../../assets/components/TrashIcon';
 import { Button } from '../../view/components/Button';
 import { Modal } from '../../view/components/Modal';
-import { TrashIcon } from './TrashIcon';
 
 interface ConfirmDeleteModalProps {
   onClose(): void;
+  onConfirm(): void;
   title: string;
   description?: string;
+  isLoading?: boolean;
 }
 
 export function ConfirmDeleteModal({
   onClose,
   title,
   description,
+  onConfirm,
+  isLoading,
 }: ConfirmDeleteModalProps) {
   return (
     <Modal open title="Excluir" onClose={onClose}>
@@ -30,10 +34,20 @@ export function ConfirmDeleteModal({
       </div>
 
       <div className="mt-10 space-y-4">
-        <Button className="w-full" variant="danger">
+        <Button
+          className="w-full"
+          variant="danger"
+          onClick={onConfirm}
+          isLoading={isLoading}
+        >
           Sim, desejo excluir
         </Button>
-        <Button className="w-full" variant="ghost" onClick={onClose}>
+        <Button
+          className="w-full"
+          variant="ghost"
+          onClick={onClose}
+          disabled={isLoading}
+        >
           Cancelar
         </Button>
       </div>
