@@ -37,7 +37,6 @@ export function ColorsDropdownInput({
   value,
 }: ColorsDropdownInputProps) {
   const [selectedColor, setSelectedColor] = useState<null | Color>(() => {
-    console.log(value);
     if (!value) {
       return null;
     }

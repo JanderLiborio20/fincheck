@@ -41,7 +41,6 @@ export function useLoginController() {
       signin(accessToken);
     } catch (error) {
       toast.error('Credenciais inválidas!');
-      console.log(error);
     }
   });
 
