@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Transaction } from '../../../../../app/entities/Transactions';
 import { useTransactions } from '../../../../../app/hooks/useTransactions';
 import { TransactionFilters } from '../../../../../app/services/transactionsService/getAll';
 import { useDashboard } from '../DashboardContext/useDashboard';
@@ -6,7 +7,11 @@ import { useDashboard } from '../DashboardContext/useDashboard';
 export function useTransactionsController() {
   const { areValuesVisible } = useDashboard();
 
-  const [isFilters, setIsFilters] = useState(false);
+  const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [transactionBeingEdited, setTransactionBeingEdited] =
+    useState<null | Transaction>(null);
+
   const [filters, setFilters] = useState<TransactionFilters>({
     month: new Date().getMonth(),
     year: new Date().getFullYear(),
@@ -41,15 +46,25 @@ export function useTransactionsController() {
   }) {
     handleChangeFilters('bankAccountId')(bankAccountId);
     handleChangeFilters('year')(year);
-    setIsFilters(false);
+    setIsFiltersModalOpen(false);
   }
 
   function handleOpenFiltersModal() {
-    setIsFilters(true);
+    setIsFiltersModalOpen(true);
   }
 
   function handleCloseFiltersModal() {
-    setIsFilters(false);
+    setIsFiltersModalOpen(false);
+  }
+
+  function handleOpenEditModal(transaction: Transaction) {
+    setIsEditModalOpen(true);
+    setTransactionBeingEdited(transaction);
+  }
+
+  function handleCloseEditModal() {
+    setIsEditModalOpen(false);
+    setTransactionBeingEdited(null);
   }
 
   return {
@@ -57,11 +72,15 @@ export function useTransactionsController() {
     transactions,
     isInitialLoading: isInitialLoading,
     isLoading: isLoading,
-    isFilters,
+    isFiltersModalOpen,
     handleOpenFiltersModal,
     handleChangeFilters,
     handleCloseFiltersModal,
     filters,
     handleApplyFilters,
+    isEditModalOpen,
+    handleOpenEditModal,
+    handleCloseEditModal,
+    transactionBeingEdited,
   };
 }
