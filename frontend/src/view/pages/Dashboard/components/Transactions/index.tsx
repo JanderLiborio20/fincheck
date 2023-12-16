@@ -2,6 +2,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { MONTHS } from '../../../../../app/config/constants';
 import { cn } from '../../../../../app/utils/cn';
 import { formatCurrency } from '../../../../../app/utils/formatCurrency';
+import { formatDate } from '../../../../../app/utils/formatDate';
 import { CategoryIcon } from '../../../../../assets/components/Categories/CategoryIcon';
 import { FilterIcon } from '../../../../../assets/components/FilterIcon';
 import emptyStateImage from '../../../../../assets/empty-state.svg';
@@ -21,6 +22,9 @@ export function Transactions() {
     handleCloseFiltersModal,
     handleOpenFiltersModal,
     isFilters,
+    handleChangeFilters,
+    filters,
+    handleApplyFilters,
   } = useTransactionsController();
 
   const hasTransactions = transactions.length > 0;
@@ -39,11 +43,15 @@ export function Transactions() {
             onClose={handleCloseFiltersModal}
             open={isFilters}
             title="Filtros"
+            onApplyFilters={handleApplyFilters}
           />
 
           <header>
             <div className="flex items-center justify-between">
-              <TransactionTypeDropdown />
+              <TransactionTypeDropdown
+                onSelect={handleChangeFilters('type')}
+                selectedType={filters.type}
+              />
 
               <button onClick={handleOpenFiltersModal}>
                 <FilterIcon />
@@ -51,7 +59,14 @@ export function Transactions() {
             </div>
 
             <div className="mt-6 relative">
-              <Swiper slidesPerView={3} centeredSlides>
+              <Swiper
+                slidesPerView={3}
+                centeredSlides
+                initialSlide={filters.month}
+                onSlideChange={(swiper) => {
+                  handleChangeFilters('month')(swiper.realIndex);
+                }}
+              >
                 <SliderNavigation />
 
                 {MONTHS.map((month, index) => (
@@ -69,7 +84,7 @@ export function Transactions() {
             </div>
           </header>
 
-          <div className="mt-4 space-y-2 flex-1 overflow-y-auto">
+          <div className="mt-4 space-y-2 flex-1 overflow-y-auto ">
             {isLoading && (
               <div className="flex flex-col items-center justify-center h-full">
                 <Spinner className="h-10 w-10" />
@@ -85,61 +100,45 @@ export function Transactions() {
               </div>
             )}
 
-            {hasTransactions && !isLoading && (
-              <>
-                {Array.from({ length: 2 }, () => (
-                  <>
-                    <div className="bg-white p-4 rounded-2xl flex items-center justify-between gap-4">
-                      <div className="flex-1 flex items-center gap-3">
-                        <CategoryIcon type="expense" />
+            {hasTransactions &&
+              !isLoading &&
+              transactions.map((transaction) => (
+                <div
+                  key={transaction.id}
+                  className="bg-white p-4 rounded-2xl flex items-center justify-between gap-4"
+                >
+                  <div className="flex-1 flex items-center gap-3">
+                    <CategoryIcon
+                      type={
+                        transaction.type === 'EXPENSE' ? 'expense' : 'income'
+                      }
+                      category={transaction.category?.icon}
+                    />
 
-                        <div>
-                          <strong className="font-bold tracking-[-0.5px] block">
-                            Almoço
-                          </strong>
-                          <span className="text-sm text-gray-600">
-                            04/12/2023
-                          </span>
-                        </div>
-                      </div>
-
-                      <span
-                        className={cn(
-                          `text-red-800 tracking-[-0.5px] font-medium`,
-                          !areValuesVisible && 'blur-sm',
-                        )}
-                      >
-                        - {formatCurrency(100)}
+                    <div>
+                      <strong className="font-bold tracking-[-0.5px] block">
+                        {transaction.name}
+                      </strong>
+                      <span className="text-sm text-gray-600">
+                        {formatDate(new Date(transaction.date))}
                       </span>
                     </div>
+                  </div>
 
-                    <div className="bg-white p-4 rounded-2xl flex items-center justify-between gap-4">
-                      <div className="flex-1 flex items-center gap-3">
-                        <CategoryIcon type="income" />
-
-                        <div>
-                          <strong className="font-bold tracking-[-0.5px] block">
-                            Salário
-                          </strong>
-                          <span className="text-sm text-gray-600">
-                            04/12/2023
-                          </span>
-                        </div>
-                      </div>
-
-                      <span
-                        className={cn(
-                          `text-green-800 tracking-[-0.5px] font-medium`,
-                          !areValuesVisible && 'blur-sm',
-                        )}
-                      >
-                        {formatCurrency(100)}
-                      </span>
-                    </div>
-                  </>
-                ))}
-              </>
-            )}
+                  <span
+                    className={cn(
+                      `tracking-[-0.5px] font-medium`,
+                      transaction.type === 'EXPENSE'
+                        ? 'text-red-800'
+                        : 'text-green-800',
+                      !areValuesVisible && 'blur-sm',
+                    )}
+                  >
+                    {transaction.type === 'EXPENSE' ? '-' : '+'}
+                    {formatCurrency(transaction.value)}
+                  </span>
+                </div>
+              ))}
           </div>
         </>
       )}
