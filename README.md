@@ -94,6 +94,7 @@ Repita esse passo para `../frontend`.
 	<li>NestJS</li>
 	<li>Prisma</li>
 	<li>Docker</li>
+	<li>Jwt</li>
 	<li>PostgreSQL</li>
 	<li>API REST</li>
 	<li>BCryptjs</li>
